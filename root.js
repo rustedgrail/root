@@ -2,6 +2,14 @@
 var http = require('http');
 var fs = require('fs');
 var express = require('express');
+var level = require('level');
+var sublevel = require('level-sublevel');
+var levelws = require('level-ws');
+
+var db = levelws(sublevel(level(__dirname + 'database')));
+
+var initialize = require('./initialize');
+
 var app = express();
 app.set('port', process.env.PORT || 3001);
 
@@ -52,6 +60,17 @@ function chapter_directory(req, res) {
   fs.readdir('chapters/' + req.params.chapter_name + '/' + req.params.directory, callback);
 }
 
-http.createServer(app).listen(app.get('port'), function(){
-  console.log('Express server listening on port ' + app.get('port'));
+var server = http.createServer(app);
+
+//
+// Initializes the database and loads
+//
+initialize(db, function (err) {
+  if (err) {
+    console.error(err);
+    return process.exit(1);
+  }
+  server.listen(app.get('port'), function(){
+    console.log('Express server listening on port ' + app.get('port'));
+  });
 });
