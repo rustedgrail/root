@@ -38,8 +38,9 @@ function chapter_directory(req, res) {
 
   function callback(err, files) {
     var data = [];
+    var length = files ? files.length : 0;
 
-    for (var i=0; i<files.length; i++) {
+    for (var i=0; i<length; i++) {
       try {
         var d = require('./chapters/' + req.params.chapter_name + '/' + req.params.directory + '/' + files[i]);
         data.push(d)
